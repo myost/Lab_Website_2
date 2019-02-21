@@ -33,6 +33,18 @@ var players = [{name:"John Doe", img: "../resources/img/player1.jpg", alt:"Image
 					 To reveal the html tag (toggle - 1), the visibility will be set to visible and
 					 the height will be set to auto.
 */
+
+function viewStudentStats(id, toggle){
+	console.log("in stats");
+	var element = $("#"+id);
+	if(toggle == 0){ //toggle is zero so we are hiding the element
+		element.css("visibility", "hidden");
+		element.css("height", 0);
+	}else{ //togle is 1 so we are showing the element
+		element.css("visibility", "visible");
+		element.css("height", "auto");
+	}
+}
 				
 /*
 	Home Page: 
@@ -43,6 +55,10 @@ var players = [{name:"John Doe", img: "../resources/img/player1.jpg", alt:"Image
 			purpose: This method will set the html body's background color to the 
 					 provided parameter.
 */
+
+function changeColor(color){
+	$("body").css("backgroundColor", color);
+}
 
 
 /*
@@ -61,6 +77,43 @@ var players = [{name:"John Doe", img: "../resources/img/player1.jpg", alt:"Image
 						
 						4. Update the second table to show the total number of wins/losses for the Buffs.
 */
+
+function loadStatsPage(){
+	//get a reference to the table
+	var table = document.getElementById('stats_table');
+	// console.log(table);
+	//set up variables to hold the information that we want to know
+	//keep track of what row we are in
+	var row_counter;
+	//variable to hold the opposing team's name
+	var oppTeam;
+	//variable to hold the buff team score
+	var buffScore;
+	//variable to hold the opposing team score
+	var oppScore;
+	//variable to hold the total number of buff wins
+	var buffWins = 0;
+	//variable to hold the total number of buff losses
+	var buffLosses = 0;
+
+	//we know that the top two rows are header rows so we are going to start at index 2 which is the first data row in the table
+	for(row_counter = 2; row_counter < table.rows.length; row_counter++){
+		oppTeam = table.rows[row_counter].cells[1].innerHTML;
+		// console.log(oppTeam);
+		buffScore = parseInt(table.rows[row_counter].cells[2].innerHTML);
+		oppScore =  parseInt(table.rows[row_counter].cells[3].innerHTML);
+		if(oppScore > buffScore){
+			table.rows[row_counter].cells[4].innerHTML = oppTeam;
+			buffLosses++;
+		}else{
+			table.rows[row_counter].cells[4].innerHTML = "University of Colorado";
+			buffWins++;
+		}
+	}
+
+	$("#wins").text(buffWins);
+	$("#losses").text(buffLosses);
+}
 
 /*
 	Football Player Information Page
@@ -104,5 +157,48 @@ var players = [{name:"John Doe", img: "../resources/img/player1.jpg", alt:"Image
 					  avg_r_yards   - the average number of rushing yards for the player's Buff career
 					  avg_rec_yards - the average number of receiving yards for the player's Buff career
 */
+
+function loadPlayersPage(){
+	//loop over our players array
+	for (var index = 0; index < players.length; index++){
+		//for each player we want to add a dropdown item to our player_selector dropdown list
+		//be sure to include the dropdown-item class for the correct styling
+		//be sure to include the href="#"
+		//be sure to make the text of the anchor tag the player's name
+		//be sure to add an onclick event call to switchPlayers on the player's index number
+		$("#player_selector").append("<a href='#' class='dropdown-item' onClick='switchPlayers("+index+")'>"+players[index].name+"</a>");
+	}
+}
+
+function switchPlayers(playerNum){
+	//set all information on the player stat table to reflect the stats for the selected player
+	var player = players[playerNum];
+	//set year
+	$("#p_year").text(player.year);
+	//set major
+	$("#p_major").text(player.major);
+	//set the number of games played
+	$("#g_played").text(player.games_played);
+	//set the player image
+	$("#player_img").attr("src", player.img);
+	$("#player_img").attr("alt", player.alt);
+	//set the number of passing yards
+	$("#p_yards").text(player.pass_yards);
+	//set the number of rushing yards
+	$("#r_yards").text(player.rushing_yards);
+	//set the number of receiving yards
+	$("#rec_yards").text(player.receiving_yards);
+
+	//calc the average rushing yards and update to page
+	var avg_r_yards = Math.round(player.rushing_yards/player.games_played);
+	$("#avg_r_yards").text(avg_r_yards);
+	//calc the average passing yards and update to page
+	var avg_p_yards = Math.round(player.pass_yards/player.games_played);
+	$("#avg_p_yards").text(avg_p_yards);
+	//calc the average receiving yards and update to page
+	var avg_rec_yards = Math.round(player.receiving_yards/player.games_played);
+	$("#avg_rec_yards").text(avg_rec_yards);
+
+}
 				
 
